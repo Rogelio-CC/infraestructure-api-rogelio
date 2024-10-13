@@ -1,0 +1,51 @@
+name: Destroy Dev Infrastructure
+on:
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+env:
+  ARM_CLIENT_ID: "${{secrets.ARM_CLIENT_ID}}"
+  ARM_CLIENT_SECRET: "${{secrets.ARM_CLIENT_SECRET}}"
+  ARM_SUBSCRIPTION_ID: "${{secrets.ARM_SUBSCRIPTION_ID}}"
+  ARM_TENANT_ID: "${{secrets.ARM_TENANT_ID}}"
+  TF_VAR_MONGO_URL: "${{secrets.TF_VAR_MONGO_URL}}"
+  TF_VAR_PORT: "${{secrets.TF_VAR_PORT}}"
+  TF_VAR_MONGO_DB: "${{secrets.TF_VAR_MONGO_DB}}"
+  TF_VAR_MAIL_SECRET_KEY: "${{secrets.TF_VAR_MAIL_SECRET_KEY}}"
+  TF_VAR_MAPBOX_ACCESS_TOKEN: "${{secrets.TF_VAR_MAPBOX_ACCESS_TOKEN}}"
+  TF_VAR_MAIL_SERVICE: "${{secrets.TF_VAR_MAIL_SERVICE}}"
+  TF_VAR_MAIL_USER: "${{secrets.TF_VAR_MAIL_USER}}"
+  TF_VAR_MONGO_INITDB_ROOT_PASSWORD: "${{secrets.TF_VAR_MONGO_INITDB_ROOT_PASSWORD}}"
+  TF_VAR_MONGO_INITDB_ROOT_USERNAME: "${{secrets.TF_VAR_MONGO_INITDB_ROOT_USERNAME}}"
+  TF_VAR_DOMAIN: "${{secrets.TF_VAR_DOMAIN}}"
+
+jobs:
+    terraform-plan-apply:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Clone repository
+              uses: actions/checkout@v4
+            
+            - name: Create SSH Keys from secrets
+              run: |
+                mkdir -p ./env/dev/keys
+                echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./env/dev/keys/712incident_server
+                echo "${{ secrets.SSH_PUBLIC_KEY }}" > ./env/dev/keys/712incident_server.pub
+                chmod 777 ./env/dev/keys/712incident_server
+                chmod 777 ./env/dev/keys/712incident_server.pub
+              
+            - name: Terraform setup
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.9.2
+                terraform_wrapper: false
+            
+            - name: Terraform Init
+              run: terraform -chdir=env/dev init
+
+            #- name: Terraform destroy
+            #  run: terraform -chdir=env/dev destroy --auto-approve
