@@ -10,7 +10,7 @@ module "dev_vm" {
   nic_name                   = "IN-NIC-Rogelio"
   mail_service               = var.MAIL_SERVICE
   security_group_name        = "IN-SG-Rogelio"
-  ssh_key_path               = "./key/712incident_server"
+  ssh_key_path               = "./keys/712incident_server"
   port                       = var.PORT
   server_name                = "IN-Server-Rogelio"
   location                   = "eastus2"
