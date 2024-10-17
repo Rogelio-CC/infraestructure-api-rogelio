@@ -10,10 +10,10 @@ services:
       -VIRTUAL_HOST=4{DOMAIN}
       - VIRTUAL_PATH=/.well-know
     volumes:
-      - /volumes/nginx/certs:/etc/nginx/certs:ro
+      - /volumes/nginx/certs:/etc/nginx/certs:rw
       - /volumes/nginx/vhostd:/etc/nginx/vhost.d
       - /volumes/nginx/html:/usr/share/nginx/html:rw
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/run/docker.sock:/tmp/docker.sock:rw
 
   lets-encrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -22,10 +22,10 @@ services:
     environment:
       - NGINX_PROXY_CONTAINER=Reverse-Proxy
     volumes:
-    - /volumes/nginx/certs:/etc/nginx/certs:ro
+    - /volumes/nginx/certs:/etc/nginx/certs:rw
     - /volumes/nginx/vhostd:/etc/nginx/vhost.d
     - /volumes/nginx/html:/usr/share/nginx/html:rw
-    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /var/run/docker.sock:/var/run/docker.sock:rw
 
   incident-api:
     image: rogercc28/incident-api:latest
